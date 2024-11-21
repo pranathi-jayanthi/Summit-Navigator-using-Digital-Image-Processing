@@ -34,23 +34,30 @@ def getInitialPeak(hist):
     return S
 
 def peakSearching(hist, initial_peaks, epsilon = 1e-6):
-    
+
     P = len(initial_peaks)
-    observing_locations = np.zeros(P)
+    L_tmp = []
     observability_indices = np.zeros(P)
     
     for k in range(1, P):
         sk = initial_peaks[k] 
-        sk_prev = initial_peaks[k - 1] 
-        
-        delta_Lk = (hist[sk] * (sk - sk_prev)) / (epsilon + abs(hist[sk] - hist[sk_prev]))
-        observing_locations[k] = sk - delta_Lk
+        hk = hist[sk]
+
+        xk = sk*np.ones(k)
+        yk = hk*np.ones(k)
+
+        deltaXk = xk - initial_peaks[:k]
+        deltaYk = yk - hist[initial_peaks[:k]] + epsilon
+
+        lk = xk - (yk * deltaXk)/deltaYk
+        L_tmp.append(min(lk))
+
+    L_s = np.min(L_tmp)
     
     for k in range(1, P):
         sk = initial_peaks[k]  
-        Lk = observing_locations[k]  
         
-        observability_indices[k] = hist[sk] / Lk
+        observability_indices[k] = hist[sk] / (sk-L_s)
     
     dominant_peaks = [initial_peaks[0]]  
 
@@ -73,7 +80,7 @@ def calculate_r_squared_least_squares(histogram, peak1, peak2):
     return r2_score(y, y_fit)
 
 def peakMerging(dominant_peaks, hist, r_squared_threshold = 0.8):
-    cnt = 1
+    cnt =1
     while (cnt > 0):
         d = []
         r_squared = []
@@ -82,6 +89,7 @@ def peakMerging(dominant_peaks, hist, r_squared_threshold = 0.8):
 
         for i in range(1, len(dominant_peaks) - 1):
             if r_squared[i] < r_squared_threshold and ((i > 1 and hist[dominant_peaks[i]] < hist[dominant_peaks[i - 1]]) or hist[dominant_peaks[i]] < hist[dominant_peaks[i + 1]]):
+                print(r_squared[i],i)
                 d.append(dominant_peaks[i])
         
         cnt = len(d)
@@ -121,13 +129,16 @@ def distribute_image(image, thresholds):
 
 
 if __name__ == "__main__":
-    filename = input('Enter File path (e.g. : "Images/23025.jpg)": ')
+    # filename = input('Enter File path (e.g. : "Images/23025.jpg)": ')
+    filename = 'Images/23025.jpg'
     image = getImage(filename)
     hist, bins = getHistogram(image)
     hist = getSmoothHistogram(hist)
     initialPeak = getInitialPeak(hist)
     dominant_peaks = peakSearching(hist, initialPeak)
+    print(dominant_peaks)
     dominant_peaks = peakMerging(dominant_peaks, hist)
+    print(dominant_peaks)
     thresholds = threshold(dominant_peaks, hist)
     output_image = distribute_image(image, thresholds)
 
