@@ -162,10 +162,10 @@ def calculate_metrics(ground_truth, detected_peaks, total_classes=1):
 
 
 if __name__ == "__main__":
-    filename = 'Images/Human_1.jpg'
-    ground_truth_file = 'ground_truth.json'  # Replace with the actual path to the JSON file
+    filename = 'Images/image.jpeg'
+    ground_truth_file = 'ground_truth.json'  
 
-    # Load ground truth peaks
+    
     with open(ground_truth_file, 'r') as f:
         ground_truth_data = json.load(f)
     ground_truth_peaks = ground_truth_data.get(filename.split("/")[1], []) 
@@ -178,17 +178,26 @@ if __name__ == "__main__":
     dominant_peaks = peakSearching(hist, initialPeak)
     dominant_peaks = peakMerging(dominant_peaks, hist)
     thresholds = threshold(dominant_peaks, hist)
+    thresholds = [int(i) for i in thresholds]
+
     print("Dominants Peaks : ",thresholds)
+
     output_image = distribute_image(image, thresholds)
-
-    # Evaluate metrics
-    metrics = calculate_metrics(ground_truth_peaks,thresholds)
-    print("Precision:", metrics["Precision"])
-    print("Recall:", metrics["Recall"])
-    print("F-Measure:", metrics["F-Measure"])
-
-    cv2.imshow("Original Image", image)
-    cv2.waitKey(0)
     distributed_image = cv2.applyColorMap(output_image, cv2.COLORMAP_PARULA)
-    cv2.imshow("Transformed Image", distributed_image)
-    cv2.waitKey(0)
+    original_image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    distributed_image_rgb = cv2.cvtColor(distributed_image, cv2.COLOR_BGR2RGB)
+    
+    plt.figure(figsize=(10, 5))
+    
+    plt.subplot(1, 2, 1)
+    plt.imshow(original_image_rgb)
+    plt.title("Original Image")
+    plt.axis("off")
+    
+    plt.subplot(1, 2, 2)
+    plt.imshow(distributed_image_rgb)
+    plt.title("Transformed Image")
+    plt.axis("off")
+    
+    plt.show()
+
