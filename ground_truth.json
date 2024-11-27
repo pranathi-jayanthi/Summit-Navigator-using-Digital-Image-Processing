@@ -1,41 +1,4 @@
 {
-    "Animal_1.jpg": [
-        85,
-        239
-    ],
-    "Animal_2.jpg": [
-        76
-    ],
-    "Animal_3.jpg": [
-        35,
-        166
-    ],
-    "Animal_4.jpg": [
-        132
-    ],
-    "Human_1.jpg": [
-        27,
-        83,
-        158,
-        231
-    ],
-    "Human_2.jpg": [
-        109,
-        228
-    ],
-    "Nature_1.jpg": [
-        54,
-        180
-    ],
-    "Nature_2.jpg": [
-        73,
-        138,
-        238
-    ],
-    "Nature_3.jpg": [
-        175
-    ],
-    "Nature_4.jpg": [
-        142
-    ]
+    "image.jpeg": [10, 45, 75],
+    "image2.jpeg": [20, 50, 80]
 }
